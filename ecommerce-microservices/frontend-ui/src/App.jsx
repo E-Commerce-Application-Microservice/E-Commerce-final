@@ -1,0 +1,90 @@
+import React from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
+import { AuthProvider } from './context/AuthContext';
+import { CartProvider } from './context/CartContext';
+
+// Components
+import Navbar from './components/Navbar';
+import LoginModal from './components/LoginModal';
+
+// Pages
+import Home from './pages/Home';
+import ProductList from './pages/ProductList';
+import ProductDetail from './pages/ProductDetail';
+import Cart from './pages/Cart';
+import Wishlist from './pages/Wishlist';
+import OrderHistory from './pages/OrderHistory';
+import AdminDashboard from './pages/AdminDashboard';
+
+function App() {
+  return (
+    <BrowserRouter>
+      <AuthProvider>
+        <CartProvider>
+          <div className="min-h-screen flex flex-col">
+            <Navbar />
+            <LoginModal />
+            <main className="flex-grow">
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/products" element={<ProductList />} />
+                <Route path="/product/:id" element={<ProductDetail />} />
+                <Route path="/cart" element={<Cart />} />
+                <Route path="/wishlist" element={<Wishlist />} />
+                <Route path="/orders" element={<OrderHistory />} />
+                <Route path="/admin" element={<AdminDashboard />} />
+              </Routes>
+            </main>
+            
+            <footer className="bg-[#1a1a2e] border-t border-white/10 mt-20">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+                  <div className="col-span-1 md:col-span-2">
+                    <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-500 mb-4 block">
+                      ShopVerse
+                    </span>
+                    <p className="text-gray-400 max-w-sm mt-4">
+                      The premium destination for the finest products. Cloud-native microservices architecture powering a seamless shopping experience.
+                    </p>
+                  </div>
+                  <div>
+                    <h3 className="text-white font-semibold mb-4">Quick Links</h3>
+                    <ul className="space-y-2 text-gray-400">
+                      <li><a href="/" className="hover:text-purple-400 transition-colors">Home</a></li>
+                      <li><a href="/products" className="hover:text-purple-400 transition-colors">Shop All</a></li>
+                      <li><a href="/cart" className="hover:text-purple-400 transition-colors">My Cart</a></li>
+                    </ul>
+                  </div>
+                  <div>
+                    <h3 className="text-white font-semibold mb-4">Support</h3>
+                    <ul className="space-y-2 text-gray-400">
+                      <li><a href="#" className="hover:text-purple-400 transition-colors">FAQ</a></li>
+                      <li><a href="#" className="hover:text-purple-400 transition-colors">Shipping</a></li>
+                      <li><a href="#" className="hover:text-purple-400 transition-colors">Returns</a></li>
+                    </ul>
+                  </div>
+                </div>
+                <div className="border-t border-white/10 mt-12 pt-8 text-center text-gray-500 text-sm">
+                  &copy; 2024 ShopVerse Platform. All rights reserved.
+                </div>
+              </div>
+            </footer>
+          </div>
+          <Toaster 
+            position="bottom-right"
+            toastOptions={{
+              style: {
+                background: '#1a1a2e', color: '#fff', border: '1px solid rgba(255,255,255,0.1)',
+                backdropFilter: 'blur(10px)',
+              },
+              success: { iconTheme: { primary: '#a855f7', secondary: '#fff' } }
+            }}
+          />
+        </CartProvider>
+      </AuthProvider>
+    </BrowserRouter>
+  );
+}
+
+export default App;

@@ -1,0 +1,117 @@
+# MongoDB Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb
+spec:
+  selector:
+    app: mongodb
+  ports:
+  - port: 27017
+    targetPort: 27017
+  type: ClusterIP
+---
+# Gateway Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-gateway
+spec:
+  selector:
+    app: api-gateway
+  ports:
+  - port: 3000
+    targetPort: 3000
+  type: ClusterIP
+---
+# User Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-service
+spec:
+  selector:
+    app: user-service
+  ports:
+  - port: 3001
+    targetPort: 3001
+  type: ClusterIP
+---
+# Auth Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-service
+spec:
+  selector:
+    app: auth-service
+  ports:
+  - port: 3002
+    targetPort: 3002
+  type: ClusterIP
+---
+# Product Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: product-service
+spec:
+  selector:
+    app: product-service
+  ports:
+  - port: 3003
+    targetPort: 3003
+  type: ClusterIP
+---
+# Search Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: search-service
+spec:
+  selector:
+    app: search-service
+  ports:
+  - port: 3004
+    targetPort: 3004
+  type: ClusterIP
+---
+# Cart Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: cart-service
+spec:
+  selector:
+    app: cart-service
+  ports:
+  - port: 3006
+    targetPort: 3006
+  type: ClusterIP
+---
+# Order Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: order-service
+spec:
+  selector:
+    app: order-service
+  ports:
+  - port: 3008
+    targetPort: 3008
+  type: ClusterIP
+---
+# Frontend Service (NodePort for external access)
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-ui
+spec:
+  selector:
+    app: frontend-ui
+  ports:
+  - port: 80
+    targetPort: 80
+    nodePort: 30080
+  type: NodePort

@@ -1,0 +1,268 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:6.0
+    container_name: shopverse-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodata:/data/db
+    networks:
+      - shopverse-net
+
+  user-service:
+    build: ./user-service
+    container_name: shopverse-user
+    ports:
+      - "3001:3001"
+    environment:
+      - PORT=3001
+      - MONGO_URI=mongodb://mongodb:27017/userdb
+    depends_on:
+      - mongodb
+    networks:
+      - shopverse-net
+
+  authentication-service:
+    build: ./authentication-service
+    container_name: shopverse-auth
+    ports:
+      - "3002:3002"
+    environment:
+      - PORT=3002
+      - MONGO_URI=mongodb://mongodb:27017/authdb
+      - JWT_SECRET=supersecretjwtkey_12345
+    depends_on:
+      - mongodb
+    networks:
+      - shopverse-net
+
+  product-service:
+    build: ./product-service
+    container_name: shopverse-product
+    ports:
+      - "3003:3003"
+    environment:
+      - PORT=3003
+      - MONGO_URI=mongodb://mongodb:27017/productdb
+    depends_on:
+      - mongodb
+    networks:
+      - shopverse-net
+
+  search-service:
+    build: ./search-service
+    container_name: shopverse-search
+    ports:
+      - "3004:3004"
+    environment:
+      - PORT=3004
+      - MONGO_URI=mongodb://mongodb:27017/searchdb
+      - PRODUCT_SERVICE_URL=http://product-service:3003
+    depends_on:
+      - mongodb
+      - product-service
+    networks:
+      - shopverse-net
+
+  inventory-service:
+    build: ./inventory-service
+    container_name: shopverse-inventory
+    ports:
+      - "3005:3005"
+    environment:
+      - PORT=3005
+      - MONGO_URI=mongodb://mongodb:27017/inventorydb
+    depends_on:
+      - mongodb
+    networks:
+      - shopverse-net
+
+  cart-service:
+    build: ./cart-service
+    container_name: shopverse-cart
+    ports:
+      - "3006:3006"
+    environment:
+      - PORT=3006
+      - MONGO_URI=mongodb://mongodb:27017/cartdb
+      - PRODUCT_SERVICE_URL=http://product-service:3003
+      - INVENTORY_SERVICE_URL=http://inventory-service:3005
+    depends_on:
+      - mongodb
+      - product-service
+      - inventory-service
+    networks:
+      - shopverse-net
+
+  wishlist-service:
+    build: ./wishlist-service
+    container_name: shopverse-wishlist
+    ports:
+      - "3007:3007"
+    environment:
+      - PORT=3007
+      - MONGO_URI=mongodb://mongodb:27017/wishlistdb
+      - PRODUCT_SERVICE_URL=http://product-service:3003
+    depends_on:
+      - mongodb
+      - product-service
+    networks:
+      - shopverse-net
+
+  order-service:
+    build: ./order-service
+    container_name: shopverse-order
+    ports:
+      - "3008:3008"
+    environment:
+      - PORT=3008
+      - MONGO_URI=mongodb://mongodb:27017/orderdb
+    depends_on:
+      - mongodb
+    networks:
+      - shopverse-net
+
+  payment-service:
+    build: ./payment-service
+    container_name: shopverse-payment
+    ports:
+      - "3009:3009"
+    environment:
+      - PORT=3009
+      - MONGO_URI=mongodb://mongodb:27017/paymentdb
+      - ORDER_SERVICE_URL=http://order-service:3008
+    depends_on:
+      - mongodb
+      - order-service
+    networks:
+      - shopverse-net
+
+  invoice-service:
+    build: ./invoice-service
+    container_name: shopverse-invoice
+    ports:
+      - "3010:3010"
+    environment:
+      - PORT=3010
+      - MONGO_URI=mongodb://mongodb:27017/invoicedb
+      - ORDER_SERVICE_URL=http://order-service:3008
+      - PAYMENT_SERVICE_URL=http://payment-service:3009
+    depends_on:
+      - mongodb
+      - order-service
+      - payment-service
+    networks:
+      - shopverse-net
+
+  shipping-service:
+    build: ./shipping-service
+    container_name: shopverse-shipping
+    ports:
+      - "3011:3011"
+    environment:
+      - PORT=3011
+      - MONGO_URI=mongodb://mongodb:27017/shippingdb
+      - ORDER_SERVICE_URL=http://order-service:3008
+    depends_on:
+      - mongodb
+      - order-service
+    networks:
+      - shopverse-net
+
+  review-rating-service:
+    build: ./review-rating-service
+    container_name: shopverse-review
+    ports:
+      - "3012:3012"
+    environment:
+      - PORT=3012
+      - MONGO_URI=mongodb://mongodb:27017/reviewdb
+      - PRODUCT_SERVICE_URL=http://product-service:3003
+    depends_on:
+      - mongodb
+      - product-service
+    networks:
+      - shopverse-net
+
+  recommendation-service:
+    build: ./recommendation-service
+    container_name: shopverse-recommendation
+    ports:
+      - "3013:3013"
+    environment:
+      - PORT=3013
+      - MONGO_URI=mongodb://mongodb:27017/recommendationdb
+      - PRODUCT_SERVICE_URL=http://product-service:3003
+      - USER_SERVICE_URL=http://user-service:3001
+      - ORDER_SERVICE_URL=http://order-service:3008
+    depends_on:
+      - mongodb
+      - product-service
+    networks:
+      - shopverse-net
+
+  admin-service:
+    build: ./admin-service
+    container_name: shopverse-admin
+    ports:
+      - "3014:3014"
+    environment:
+      - PORT=3014
+      - MONGO_URI=mongodb://mongodb:27017/admindb
+      - USER_SERVICE_URL=http://user-service:3001
+      - PRODUCT_SERVICE_URL=http://product-service:3003
+      - ORDER_SERVICE_URL=http://order-service:3008
+      - INVENTORY_SERVICE_URL=http://inventory-service:3005
+      - SHIPPING_SERVICE_URL=http://shipping-service:3011
+    depends_on:
+      - mongodb
+    networks:
+      - shopverse-net
+
+  api-gateway:
+    build: ./api-gateway
+    container_name: shopverse-gateway
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - USER_SERVICE_URL=http://user-service:3001
+      - AUTH_SERVICE_URL=http://authentication-service:3002
+      - PRODUCT_SERVICE_URL=http://product-service:3003
+      - SEARCH_SERVICE_URL=http://search-service:3004
+      - INVENTORY_SERVICE_URL=http://inventory-service:3005
+      - CART_SERVICE_URL=http://cart-service:3006
+      - WISHLIST_SERVICE_URL=http://wishlist-service:3007
+      - ORDER_SERVICE_URL=http://order-service:3008
+      - PAYMENT_SERVICE_URL=http://payment-service:3009
+      - INVOICE_SERVICE_URL=http://invoice-service:3010
+      - SHIPPING_SERVICE_URL=http://shipping-service:3011
+      - REVIEW_SERVICE_URL=http://review-rating-service:3012
+      - RECOMMENDATION_SERVICE_URL=http://recommendation-service:3013
+      - ADMIN_SERVICE_URL=http://admin-service:3014
+    depends_on:
+      - user-service
+      - authentication-service
+      - product-service
+      - search-service
+      - inventory-service
+      - cart-service
+      - wishlist-service
+      - order-service
+      - payment-service
+      - invoice-service
+      - shipping-service
+      - review-rating-service
+      - recommendation-service
+      - admin-service
+    networks:
+      - shopverse-net
+
+networks:
+  shopverse-net:
+    driver: bridge
+
+volumes:
+  mongodata:
