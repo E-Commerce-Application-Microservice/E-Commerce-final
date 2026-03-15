@@ -122,7 +122,7 @@ export default function Home() {
                     )}
                   </div>
                   <button 
-                    onClick={(e) => { e.preventDefault(); requireAuth(() => addItem(product)); }}
+                    onClick={(e) => { e.preventDefault(); requireAuth(() => addItem({ productId: product._id, name: product.name, image: product.images?.[0], price: product.price })); }}
                     className="p-3 rounded-full bg-white/10 hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 text-white transition-all duration-300"
                     aria-label="Add to cart"
                   >
