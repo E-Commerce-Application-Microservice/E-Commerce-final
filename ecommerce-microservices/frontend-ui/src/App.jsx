@@ -15,6 +15,7 @@ import ProductDetail from './pages/ProductDetail';
 import Cart from './pages/Cart';
 import Wishlist from './pages/Wishlist';
 import OrderHistory from './pages/OrderHistory';
+import TrackPackage from './pages/TrackPackage';
 import AdminDashboard from './pages/AdminDashboard';
 
 function App() {
@@ -33,6 +34,7 @@ function App() {
                 <Route path="/cart" element={<Cart />} />
                 <Route path="/wishlist" element={<Wishlist />} />
                 <Route path="/orders" element={<OrderHistory />} />
+                <Route path="/track/:orderId" element={<TrackPackage />} />
                 <Route path="/admin" element={<AdminDashboard />} />
               </Routes>
             </main>

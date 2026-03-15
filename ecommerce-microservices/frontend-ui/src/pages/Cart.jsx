@@ -12,6 +12,13 @@ export default function Cart() {
   const navigate = useNavigate();
   const [checkingOut, setCheckingOut] = useState(false);
   const [deliveryType, setDeliveryType] = useState('normal');
+  const [paymentMethod, setPaymentMethod] = useState('credit_card');
+  const [paymentDetails, setPaymentDetails] = useState({
+    cardNumber: '',
+    expiryDate: '',
+    cvv: '',
+    upiId: ''
+  });
 
   const deliveryFee = deliveryType === 'express' ? 14.99 : 4.99;
   const subtotal = cart.total || 0;
@@ -32,9 +39,18 @@ export default function Cart() {
       const orderId = orderRes.data.order._id;
 
       // 2. Process mock payment
-      const payRes = await processPayment({
-        orderId, userId: user.id, amount: total, method: 'credit_card', cardNumber: '1234123412341234'
-      });
+      const paymentPayload = {
+        orderId, 
+        userId: user.id, 
+        amount: total, 
+        method: paymentMethod, 
+      };
+      
+      if (paymentMethod === 'credit_card') {
+        paymentPayload.cardNumber = paymentDetails.cardNumber || '1234123412341234';
+      }
+      
+      const payRes = await processPayment(paymentPayload);
 
       if (payRes.data.success) {
         toast.success('Order placed successfully!');
@@ -150,6 +166,65 @@ export default function Cart() {
                     </div>
                   </label>
                 </div>
+              </div>
+              
+              <div className="border-t border-white/10 pt-4 mt-4">
+                <p className="text-sm text-gray-400 mb-3">Payment Method</p>
+                <div className="flex gap-4 mb-4">
+                  <button 
+                    onClick={() => setPaymentMethod('credit_card')}
+                    className={`flex-1 py-2 rounded-xl border text-sm font-medium transition-all ${paymentMethod === 'credit_card' ? 'bg-purple-500/20 border-purple-500 text-purple-300' : 'bg-white/5 border-white/10 text-gray-300 hover:bg-white/10'}`}
+                  >
+                    Credit / Debit Card
+                  </button>
+                  <button 
+                    onClick={() => setPaymentMethod('upi')}
+                    className={`flex-1 py-2 rounded-xl border text-sm font-medium transition-all ${paymentMethod === 'upi' ? 'bg-purple-500/20 border-purple-500 text-purple-300' : 'bg-white/5 border-white/10 text-gray-300 hover:bg-white/10'}`}
+                  >
+                    UPI
+                  </button>
+                </div>
+                
+                {paymentMethod === 'credit_card' && (
+                  <div className="space-y-3 animate-fade-in">
+                    <input 
+                      type="text" 
+                      placeholder="Card Number" 
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500"
+                      value={paymentDetails.cardNumber}
+                      onChange={e => setPaymentDetails({...paymentDetails, cardNumber: e.target.value})}
+                    />
+                    <div className="flex gap-3">
+                      <input 
+                        type="text" 
+                        placeholder="MM/YY" 
+                        className="w-1/2 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500"
+                        value={paymentDetails.expiryDate}
+                        onChange={e => setPaymentDetails({...paymentDetails, expiryDate: e.target.value})}
+                      />
+                      <input 
+                        type="password" 
+                        placeholder="CVV" 
+                        className="w-1/2 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500"
+                        maxLength="4"
+                        value={paymentDetails.cvv}
+                        onChange={e => setPaymentDetails({...paymentDetails, cvv: e.target.value})}
+                      />
+                    </div>
+                  </div>
+                )}
+                
+                {paymentMethod === 'upi' && (
+                  <div className="animate-fade-in">
+                    <input 
+                      type="text" 
+                      placeholder="Enter UPI ID (e.g. name@bank)" 
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500"
+                      value={paymentDetails.upiId}
+                      onChange={e => setPaymentDetails({...paymentDetails, upiId: e.target.value})}
+                    />
+                  </div>
+                )}
               </div>
             </div>
 

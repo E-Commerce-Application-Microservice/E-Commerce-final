@@ -170,6 +170,14 @@ app.post('/api/invoices/generate', authenticate, async (req, res) => {
 app.get('/api/invoices/:orderId', authenticate, async (req, res) => {
   try { const r = await axios.get(`${SERVICES.invoice}/invoices/${req.params.orderId}`); res.json(r.data); } catch (err) { res.status(500).json({ error: err.message }); }
 });
+app.get('/api/invoices/:orderId/pdf', authenticate, async (req, res) => {
+  try { 
+    const r = await axios.get(`${SERVICES.invoice}/invoices/${req.params.orderId}/pdf`, { responseType: 'stream' });
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename=invoice-${req.params.orderId}.pdf`);
+    r.data.pipe(res);
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
 
 // Shipping
 app.get('/api/shipping/:orderId', authenticate, async (req, res) => {

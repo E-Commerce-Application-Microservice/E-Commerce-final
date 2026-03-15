@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { getOrders, getShipping, getInvoice } from '../api';
 import { useAuth } from '../context/AuthContext';
 import { FiPackage, FiTruck, FiCheckCircle } from 'react-icons/fi';
@@ -32,8 +33,23 @@ export default function OrderHistory() {
 
   const handleViewInvoice = async (orderId) => {
     try {
-      const res = await getInvoice(orderId);
-      toast.success(`Invoice: ${res.data.invoiceNumber}\nTotal: $${res.data.totalAmount}`, {duration: 5000});
+      const response = await fetch(`${import.meta.env.VITE_API_URL || '/api'}/invoices/${orderId}/pdf`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      
+      if (!response.ok) throw new Error('Invoice not found');
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `invoice-${orderId}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
     } catch (err) {
       toast.error('Invoice not available yet');
     }
@@ -115,7 +131,7 @@ export default function OrderHistory() {
                      <div className="flex items-center gap-2 text-purple-400">
                        <FiTruck /> <span className="text-gray-300">Est. Delivery:</span> <span className="font-semibold text-white">{new Date(order.estimatedDelivery).toLocaleDateString()}</span>
                      </div>
-                     <button onClick={() => handleTrackPackage(order._id)} className="text-pink-400 hover:text-pink-300 font-medium transition-colors ml-auto">Track Package</button>
+                     <Link to={`/track/${order._id}`} className="text-pink-400 hover:text-pink-300 font-medium transition-colors ml-auto">Track Package</Link>
                    </div>
                 )}
               </div>

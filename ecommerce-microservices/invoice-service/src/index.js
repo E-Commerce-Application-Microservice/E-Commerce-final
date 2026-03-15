@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const axios = require('axios');
+const PDFDocument = require('pdfkit');
 require('dotenv').config();
 
 const app = express();
@@ -86,6 +87,52 @@ app.get('/invoices/:orderId', async (req, res) => {
     const invoice = await Invoice.findOne({ orderId: req.params.orderId });
     if (!invoice) return res.status(404).json({ error: 'Invoice not found' });
     res.json(invoice);
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// Download invoice PDF
+app.get('/invoices/:orderId/pdf', async (req, res) => {
+  try {
+    const invoice = await Invoice.findOne({ orderId: req.params.orderId });
+    if (!invoice) return res.status(404).json({ error: 'Invoice not found' });
+
+    const doc = new PDFDocument({ margin: 50 });
+    
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename=invoice-${invoice.invoiceNumber}.pdf`);
+    
+    doc.pipe(res);
+
+    // Header
+    doc.fontSize(20).text('Invoice', { align: 'center' });
+    doc.moveDown();
+    
+    // Details
+    doc.fontSize(12).text(`Invoice Number: ${invoice.invoiceNumber}`);
+    doc.text(`Order ID: ${invoice.orderId}`);
+    doc.text(`Date: ${new Date(invoice.createdAt).toLocaleDateString()}`);
+    doc.moveDown();
+    
+    // Items
+    doc.fontSize(14).text('Items:', { underline: true });
+    doc.moveDown(0.5);
+    doc.fontSize(12);
+    invoice.items.forEach(item => {
+      doc.text(`${item.name} x${item.quantity} - $${item.subtotal.toFixed(2)}`);
+    });
+    doc.moveDown();
+    
+    // Summary
+    doc.text(`Subtotal: $${invoice.subtotal.toFixed(2)}`);
+    doc.text(`Delivery Fee: $${invoice.deliveryFee.toFixed(2)}`);
+    doc.text(`Tax: $${invoice.tax.toFixed(2)}`);
+    doc.fontSize(14).text(`Total Amount: $${invoice.totalAmount.toFixed(2)}`, { stroke: true });
+    doc.moveDown();
+    
+    doc.fontSize(12).text(`Payment Method: ${invoice.paymentMethod}`);
+    doc.text(`Payment Status: ${invoice.paymentStatus}`);
+    
+    doc.end();
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
