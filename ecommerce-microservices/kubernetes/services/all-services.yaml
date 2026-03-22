@@ -76,6 +76,19 @@ spec:
     targetPort: 3004
   type: ClusterIP
 ---
+# Inventory Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: inventory-service
+spec:
+  selector:
+    app: inventory-service
+  ports:
+  - port: 3005
+    targetPort: 3005
+  type: ClusterIP
+---
 # Cart Service
 apiVersion: v1
 kind: Service
@@ -89,6 +102,19 @@ spec:
     targetPort: 3006
   type: ClusterIP
 ---
+# Wishlist Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: wishlist-service
+spec:
+  selector:
+    app: wishlist-service
+  ports:
+  - port: 3007
+    targetPort: 3007
+  type: ClusterIP
+---
 # Order Service
 apiVersion: v1
 kind: Service
@@ -100,6 +126,84 @@ spec:
   ports:
   - port: 3008
     targetPort: 3008
+  type: ClusterIP
+---
+# Payment Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: payment-service
+spec:
+  selector:
+    app: payment-service
+  ports:
+  - port: 3009
+    targetPort: 3009
+  type: ClusterIP
+---
+# Invoice Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: invoice-service
+spec:
+  selector:
+    app: invoice-service
+  ports:
+  - port: 3010
+    targetPort: 3010
+  type: ClusterIP
+---
+# Shipping Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: shipping-service
+spec:
+  selector:
+    app: shipping-service
+  ports:
+  - port: 3011
+    targetPort: 3011
+  type: ClusterIP
+---
+# Review Rating Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: review-rating-service
+spec:
+  selector:
+    app: review-rating-service
+  ports:
+  - port: 3012
+    targetPort: 3012
+  type: ClusterIP
+---
+# Recommendation Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: recommendation-service
+spec:
+  selector:
+    app: recommendation-service
+  ports:
+  - port: 3013
+    targetPort: 3013
+  type: ClusterIP
+---
+# Admin Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: admin-service
+spec:
+  selector:
+    app: admin-service
+  ports:
+  - port: 3014
+    targetPort: 3014
   type: ClusterIP
 ---
 # Frontend Service (NodePort for external access)
