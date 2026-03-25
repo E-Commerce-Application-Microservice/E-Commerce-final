@@ -89,7 +89,7 @@ export default function Navbar() {
                   {user.role === 'admin' && (
                     <Link to="/admin" className="block px-4 py-2 text-sm text-purple-400 hover:text-purple-300 hover:bg-white/5 transition-colors font-medium">Admin Dashboard</Link>
                   )}
-                  <button onClick={logout} className="w-full text-left px-4 py-2 text-sm text-pink-400 hover:text-pink-300 hover:bg-white/5 transition-colors flex items-center gap-2">
+                  <button onClick={() => { logout(); navigate('/'); }} className="w-full text-left px-4 py-2 text-sm text-pink-400 hover:text-pink-300 hover:bg-white/5 transition-colors flex items-center gap-2">
                     <FiLogOut /> Sign Out
                   </button>
                 </div>
@@ -150,7 +150,7 @@ export default function Navbar() {
                  {user.role === 'admin' && (
                     <Link to="/admin" className="text-purple-400 py-2 border-b border-white/5" onClick={() => setMenuOpen(false)}>Admin Dashboard</Link>
                  )}
-                 <button onClick={() => { logout(); setMenuOpen(false); }} className="text-pink-400 py-2 text-left">Sign Out</button>
+                 <button onClick={() => { logout(); navigate('/'); setMenuOpen(false); }} className="text-pink-400 py-2 text-left">Sign Out</button>
                </>
             ) : (
                <button onClick={() => { setShowLoginModal(true); setMenuOpen(false); }} className="text-purple-400 py-2 text-left">Sign In</button>

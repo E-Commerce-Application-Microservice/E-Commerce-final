@@ -20,6 +20,13 @@ export default function ProductDetail() {
   const [selectedColor, setSelectedColor] = useState('');
   const [activeImage, setActiveImage] = useState(0);
 
+  // Review Form State
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [reviewRating, setReviewRating] = useState(5);
+  const [reviewHover, setReviewHover] = useState(0);
+  const [reviewTitle, setReviewTitle] = useState('');
+  const [reviewText, setReviewText] = useState('');
+
   const { addItem } = useCart();
   const { user, requireAuth } = useAuth();
   const handleAddToWishlist = () => {
@@ -290,17 +297,87 @@ export default function ProductDetail() {
               })}
             </div>
             
-            <button onClick={() => {
-              const reviewText = window.prompt("Write your review:");
-              const ratingText = window.prompt("Rate 1-5:");
-              if(reviewText && ratingText && !isNaN(ratingText)) {
-                submitReview({ productId: product._id, userId: user?.id || 'anonymous', userName: user?.name || 'Anonymous User', rating: Number(ratingText), review: reviewText })
-                  .then(() => { toast.success('Review submitted!'); setTimeout(() => window.location.reload(), 1000); })
-                  .catch(err => toast.error(err.response?.data?.error || 'Failed to submit review'));
-              }
-            }} className="w-full btn-secondary mt-8 border-purple-500/30 text-purple-300 hover:text-white">
-              Write a Review
-            </button>
+            {!showReviewForm ? (
+              <button 
+                onClick={() => {
+                  requireAuth(() => setShowReviewForm(true));
+                }} 
+                className="w-full btn-secondary mt-8 border-purple-500/30 text-purple-300 hover:text-white"
+              >
+                Write a Review
+              </button>
+            ) : (
+              <div className="mt-8 p-6 glass-card rounded-2xl border border-purple-500/30 bg-white/5 animate-fade-in shadow-xl shadow-purple-500/10">
+                <h3 className="text-xl font-bold text-white mb-4">Your Review</h3>
+                <div className="flex gap-2 mb-6 cursor-pointer">
+                  {[1, 2, 3, 4, 5].map(star => (
+                    <button
+                      key={star}
+                      type="button"
+                      onMouseEnter={() => setReviewHover(star)}
+                      onMouseLeave={() => setReviewHover(0)}
+                      onClick={() => setReviewRating(star)}
+                      className="transition-transform hover:scale-110 focus:outline-none"
+                    >
+                      <FiStar 
+                        size={32} 
+                        className={(reviewHover || reviewRating) >= star ? "fill-current text-yellow-500 filter drop-shadow-[0_0_8px_rgba(234,179,8,0.6)]" : "text-gray-600"} 
+                      />
+                    </button>
+                  ))}
+                </div>
+                <input
+                  type="text"
+                  placeholder="Review Title (optional)"
+                  className="w-full bg-[#0f0f1a]/80 border border-white/10 rounded-xl px-4 py-3 text-white mb-4 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all placeholder-gray-500"
+                  value={reviewTitle}
+                  onChange={e => setReviewTitle(e.target.value)}
+                />
+                <textarea
+                  placeholder="Share your experience with this product..."
+                  rows={4}
+                  className="w-full bg-[#0f0f1a]/80 border border-white/10 rounded-xl px-4 py-3 text-white mb-6 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all placeholder-gray-500 custom-scrollbar resize-none"
+                  value={reviewText}
+                  onChange={e => setReviewText(e.target.value)}
+                ></textarea>
+                <div className="flex gap-4">
+                  <button 
+                    onClick={() => {
+                      setShowReviewForm(false);
+                      setReviewText('');
+                      setReviewTitle('');
+                    }}
+                    className="flex-1 py-3 rounded-xl border border-white/10 text-gray-400 hover:text-white hover:bg-white/5 transition-colors font-medium"
+                  >
+                    Cancel
+                  </button>
+                  <button 
+                    onClick={() => {
+                      if (!reviewText.trim()) return toast.error('Please write a review text');
+                      submitReview({ 
+                        productId: product._id, 
+                        userId: user?.id, 
+                        userName: user?.name, 
+                        rating: reviewRating, 
+                        title: reviewTitle,
+                        review: reviewText 
+                      })
+                      .then(() => { 
+                        toast.success('Review submitted successfully!'); 
+                        setShowReviewForm(false);
+                        setReviewText('');
+                        setReviewTitle('');
+                        setTimeout(() => window.location.reload(), 1200);
+                      })
+                      .catch(err => toast.error(err.response?.data?.error || 'Failed to submit review'));
+                    }}
+                    className="flex-1 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold shadow-lg shadow-purple-500/25 transition-all transform hover:-translate-y-0.5"
+                  >
+                    Submit
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Review List */}
