@@ -16,6 +16,8 @@ export default function Navbar() {
     if (search.trim()) navigate(`/products?q=${encodeURIComponent(search)}`);
   };
 
+  const isCustomer = !user || user.role !== 'admin';
+
   return (
     <nav className="sticky top-0 z-40 bg-[#0f0f1a]/80 backdrop-blur-lg border-b border-white/10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -31,37 +33,43 @@ export default function Navbar() {
           </Link>
 
           {/* Search Bar - Desktop */}
-          <div className="hidden md:block flex-1 max-w-2xl mx-8">
-            <form onSubmit={handleSearch} className="relative">
-              <input
-                type="text"
-                placeholder="Search products, categories, brands..."
-                className="w-full bg-white/5 border border-white/10 rounded-full py-2.5 pl-5 pr-12 text-sm text-white focus:outline-none focus:border-purple-500 focus:bg-white/10 transition-all duration-300"
-                value={search} onChange={e => setSearch(e.target.value)}
-              />
-              <button type="submit" className="absolute right-2 top-1.5 p-1.5 text-gray-400 hover:text-purple-400 transition-colors">
-                <FiSearch size={20} />
-              </button>
-            </form>
-          </div>
+          {isCustomer && (
+            <div className="hidden md:block flex-1 max-w-2xl mx-8">
+              <form onSubmit={handleSearch} className="relative">
+                <input
+                  type="text"
+                  placeholder="Search products, categories, brands..."
+                  className="w-full bg-white/5 border border-white/10 rounded-full py-2.5 pl-5 pr-12 text-sm text-white focus:outline-none focus:border-purple-500 focus:bg-white/10 transition-all duration-300"
+                  value={search} onChange={e => setSearch(e.target.value)}
+                />
+                <button type="submit" className="absolute right-2 top-1.5 p-1.5 text-gray-400 hover:text-purple-400 transition-colors">
+                  <FiSearch size={20} />
+                </button>
+              </form>
+            </div>
+          )}
 
           {/* Desktop Nav Items */}
           <div className="hidden md:flex items-center gap-6">
-            <Link to="/products" className="nav-link text-sm">Shop</Link>
-            <Link to="/admin-auth" className="text-gray-300 hover:text-blue-400 transition-colors text-sm font-medium">Seller Portal</Link>
-            
-            <button onClick={() => requireAuth(() => navigate('/wishlist'))} className="text-gray-300 hover:text-pink-400 transition-colors p-2">
-              <FiHeart size={22} />
-            </button>
-            
-            <button onClick={() => requireAuth(() => navigate('/cart'))} className="text-gray-300 hover:text-purple-400 transition-colors p-2 relative group">
-              <FiShoppingCart size={22} className="group-hover:animate-cart-bounce" />
-              {cart?.count > 0 && (
-                <span className="absolute top-0 right-0 -mt-1 -mr-1 bg-pink-500 text-white text-[10px] font-bold h-5 w-5 rounded-full flex items-center justify-center">
-                  {cart.count}
-                </span>
-              )}
-            </button>
+            {isCustomer && (
+              <>
+                <Link to="/products" className="nav-link text-sm">Shop</Link>
+                <Link to="/admin-auth" className="text-gray-300 hover:text-blue-400 transition-colors text-sm font-medium">Seller Portal</Link>
+                
+                <button onClick={() => requireAuth(() => navigate('/wishlist'))} className="text-gray-300 hover:text-pink-400 transition-colors p-2">
+                  <FiHeart size={22} />
+                </button>
+                
+                <button onClick={() => requireAuth(() => navigate('/cart'))} className="text-gray-300 hover:text-purple-400 transition-colors p-2 relative group">
+                  <FiShoppingCart size={22} className="group-hover:animate-cart-bounce" />
+                  {cart?.count > 0 && (
+                    <span className="absolute top-0 right-0 -mt-1 -mr-1 bg-pink-500 text-white text-[10px] font-bold h-5 w-5 rounded-full flex items-center justify-center">
+                      {cart.count}
+                    </span>
+                  )}
+                </button>
+              </>
+            )}
 
             {user ? (
               <div className="relative group/menu">
@@ -75,7 +83,9 @@ export default function Navbar() {
                     <p className="text-sm text-white font-medium truncate">{user.name}</p>
                     <p className="text-xs text-gray-400 truncate">{user.email}</p>
                   </div>
-                  <Link to="/orders" className="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition-colors">Order History</Link>
+                  {isCustomer && (
+                    <Link to="/orders" className="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition-colors">Order History</Link>
+                  )}
                   {user.role === 'admin' && (
                     <Link to="/admin" className="block px-4 py-2 text-sm text-purple-400 hover:text-purple-300 hover:bg-white/5 transition-colors font-medium">Admin Dashboard</Link>
                   )}
@@ -93,14 +103,16 @@ export default function Navbar() {
 
           {/* Mobile menu button */}
           <div className="md:hidden flex items-center gap-4">
-             <button onClick={() => requireAuth(() => navigate('/cart'))} className="text-gray-300 relative">
-              <FiShoppingCart size={22} />
-              {cart?.count > 0 && (
-                <span className="absolute -top-2 -right-2 bg-pink-500 text-white text-[10px] font-bold h-4 w-4 rounded-full flex items-center justify-center">
-                  {cart.count}
-                </span>
-              )}
-            </button>
+             {isCustomer && (
+               <button onClick={() => requireAuth(() => navigate('/cart'))} className="text-gray-300 relative">
+                <FiShoppingCart size={22} />
+                {cart?.count > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-pink-500 text-white text-[10px] font-bold h-4 w-4 rounded-full flex items-center justify-center">
+                    {cart.count}
+                  </span>
+                )}
+              </button>
+             )}
             <button onClick={() => setMenuOpen(!menuOpen)} className="text-gray-300 p-2">
               {menuOpen ? <FiX size={24} /> : <FiMenu size={24} />}
             </button>
@@ -111,20 +123,30 @@ export default function Navbar() {
       {/* Mobile Menu */}
       {menuOpen && (
         <div className="md:hidden border-t border-white/10 bg-[#1a1a2e] p-4 absolute w-full animate-slide-up">
-          <form onSubmit={(e) => { handleSearch(e); setMenuOpen(false); }} className="mb-4">
-            <input
-              type="text" placeholder="Search..."
-              className="w-full bg-white/5 border border-white/10 rounded-full py-2 px-4 text-sm text-white"
-              value={search} onChange={e => setSearch(e.target.value)}
-            />
-          </form>
+          {isCustomer && (
+            <form onSubmit={(e) => { handleSearch(e); setMenuOpen(false); }} className="mb-4">
+              <input
+                type="text" placeholder="Search..."
+                className="w-full bg-white/5 border border-white/10 rounded-full py-2 px-4 text-sm text-white"
+                value={search} onChange={e => setSearch(e.target.value)}
+              />
+            </form>
+          )}
           <div className="space-y-3 flex flex-col">
-            <Link to="/products" className="text-gray-300 py-2 border-b border-white/5" onClick={() => setMenuOpen(false)}>Shop</Link>
-            <Link to="/admin-auth" className="text-blue-400 py-2 border-b border-white/5 font-medium" onClick={() => setMenuOpen(false)}>Seller Portal</Link>
+            {isCustomer && (
+              <>
+                <Link to="/products" className="text-gray-300 py-2 border-b border-white/5" onClick={() => setMenuOpen(false)}>Shop</Link>
+                <Link to="/admin-auth" className="text-blue-400 py-2 border-b border-white/5 font-medium" onClick={() => setMenuOpen(false)}>Seller Portal</Link>
+              </>
+            )}
             {user ? (
                <>
-                 <Link to="/orders" className="text-gray-300 py-2 border-b border-white/5" onClick={() => setMenuOpen(false)}>Order History</Link>
-                 <Link to="/wishlist" className="text-gray-300 py-2 border-b border-white/5" onClick={() => setMenuOpen(false)}>Wishlist</Link>
+                 {isCustomer && (
+                   <>
+                    <Link to="/orders" className="text-gray-300 py-2 border-b border-white/5" onClick={() => setMenuOpen(false)}>Order History</Link>
+                    <Link to="/wishlist" className="text-gray-300 py-2 border-b border-white/5" onClick={() => setMenuOpen(false)}>Wishlist</Link>
+                   </>
+                 )}
                  {user.role === 'admin' && (
                     <Link to="/admin" className="text-purple-400 py-2 border-b border-white/5" onClick={() => setMenuOpen(false)}>Admin Dashboard</Link>
                  )}
