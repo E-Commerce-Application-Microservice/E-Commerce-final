@@ -17,6 +17,7 @@ import Wishlist from './pages/Wishlist';
 import OrderHistory from './pages/OrderHistory';
 import TrackPackage from './pages/TrackPackage';
 import AdminDashboard from './pages/AdminDashboard';
+import AdminAuth from './pages/AdminAuth';
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
                 <Route path="/orders" element={<OrderHistory />} />
                 <Route path="/track/:orderId" element={<TrackPackage />} />
                 <Route path="/admin" element={<AdminDashboard />} />
+                <Route path="/admin-auth" element={<AdminAuth />} />
               </Routes>
             </main>
             

@@ -9,7 +9,7 @@ ShopVerse is a premium e-commerce platform built on a robust, cloud-native **Mic
 - **Synchronous Internal Communication**: Services communicate directly with each other over HTTP using internal Docker/Kubernetes network URLs (for example, `review-rating-service` connects to `product-service` to validate reviews).
 
 ## 2. Architecture Diagram
-
+-
 ```mermaid
 graph TD
     Client[Client Browser] -->|Port 80| UI[Frontend UI - React]
@@ -102,3 +102,6 @@ graph TD
 - **Load Balancing Integration**: Install external load balancer components like HAProxy, utilizing `MetalLB` as an IP address pool allocator.
 - **Enhanced Gateway Routing**: Substitute the basic Express.js gateway with Kubernetes-native `kgateway` rules mapped to respective microservice `ClusterIP` instances, maximizing throughput.
 - **Orchestrated Autoscaling**: Introduce Kubernetes Horizontal Pod Autoscaler (HPA) metrics server logic to automatically spool up duplicate replicas of high-load services like the Frontend, Product, and Cart services seamlessly behind the load balancers.
+
+
+[def]: image.png

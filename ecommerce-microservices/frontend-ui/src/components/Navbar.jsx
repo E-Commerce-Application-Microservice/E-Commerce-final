@@ -48,6 +48,7 @@ export default function Navbar() {
           {/* Desktop Nav Items */}
           <div className="hidden md:flex items-center gap-6">
             <Link to="/products" className="nav-link text-sm">Shop</Link>
+            <Link to="/admin-auth" className="text-gray-300 hover:text-blue-400 transition-colors text-sm font-medium">Seller Portal</Link>
             
             <button onClick={() => requireAuth(() => navigate('/wishlist'))} className="text-gray-300 hover:text-pink-400 transition-colors p-2">
               <FiHeart size={22} />
@@ -119,6 +120,7 @@ export default function Navbar() {
           </form>
           <div className="space-y-3 flex flex-col">
             <Link to="/products" className="text-gray-300 py-2 border-b border-white/5" onClick={() => setMenuOpen(false)}>Shop</Link>
+            <Link to="/admin-auth" className="text-blue-400 py-2 border-b border-white/5 font-medium" onClick={() => setMenuOpen(false)}>Seller Portal</Link>
             {user ? (
                <>
                  <Link to="/orders" className="text-gray-300 py-2 border-b border-white/5" onClick={() => setMenuOpen(false)}>Order History</Link>

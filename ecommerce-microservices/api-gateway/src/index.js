@@ -61,6 +61,15 @@ app.post('/api/auth/register', async (req, res) => {
   } catch (err) { res.status(err.response?.status || 500).json(err.response?.data || { error: err.message }); }
 });
 
+app.post('/api/auth/register-admin', async (req, res) => {
+  try {
+    const userResp = await axios.post(`${SERVICES.user}/register-admin`, req.body);
+    const user = userResp.data.user;
+    const tokenResp = await axios.post(`${SERVICES.auth}/generate-token`, { userId: user.id, email: user.email, role: user.role });
+    res.status(201).json({ message: 'Admin Registration successful', user, token: tokenResp.data.token });
+  } catch (err) { res.status(err.response?.status || 500).json(err.response?.data || { error: err.message }); }
+});
+
 app.post('/api/auth/verify', async (req, res) => {
   try {
     const resp = await axios.post(`${SERVICES.auth}/verify-token`, req.body);

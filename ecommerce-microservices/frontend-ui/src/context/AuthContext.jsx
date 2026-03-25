@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { verifyToken, login, register, getProfile } from '../api';
+import { verifyToken, login, register, registerAdmin, getProfile } from '../api';
 
 const AuthContext = createContext();
 
@@ -46,6 +46,13 @@ export const AuthProvider = ({ children }) => {
     return res.data;
   };
 
+  const registerAdminUser = async (data) => {
+    const res = await registerAdmin(data);
+    localStorage.setItem('token', res.data.token);
+    setUser(res.data.user);
+    return res.data;
+  };
+
   const logout = () => {
     localStorage.removeItem('token');
     setUser(null);
@@ -56,7 +63,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, loginUser, registerUser, logout, showLoginModal, setShowLoginModal, requireAuth }}>
+    <AuthContext.Provider value={{ user, loading, loginUser, registerUser, registerAdminUser, logout, showLoginModal, setShowLoginModal, requireAuth }}>
       {children}
     </AuthContext.Provider>
   );

@@ -54,6 +54,20 @@ app.post('/register', async (req, res) => {
   }
 });
 
+// Register Admin
+app.post('/register-admin', async (req, res) => {
+  try {
+    const { name, email, password, phone, address } = req.body;
+    const exists = await User.findOne({ email });
+    if (exists) return res.status(400).json({ error: 'Email already registered' });
+    const hashed = await bcrypt.hash(password, 10);
+    const user = await User.create({ name, email, password: hashed, phone, address, role: 'admin' });
+    res.status(201).json({ message: 'Admin registered', user: { id: user._id, name: user.name, email: user.email, role: user.role } });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Login
 app.post('/login', async (req, res) => {
   try {

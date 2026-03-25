@@ -17,6 +17,7 @@ api.interceptors.request.use((config) => {
 // Auth
 export const login = (data) => api.post('/auth/login', data);
 export const register = (data) => api.post('/auth/register', data);
+export const registerAdmin = (data) => api.post('/auth/register-admin', data);
 export const verifyToken = (token) => api.post('/auth/verify', { token });
 
 // Products
