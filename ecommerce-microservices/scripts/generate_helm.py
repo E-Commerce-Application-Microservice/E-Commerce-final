@@ -137,6 +137,15 @@ appVersion: "1.0.0"
     with open(os.path.join(RELEASE_DIR, 'values.yaml'), 'w') as f:
         f.write(build_yaml(values_dict))
     
+    # Create namespace.yaml template to auto-create the namespace
+    namespace_yaml = """apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ .Values.namespace }}
+"""
+    with open(os.path.join(TEMPLATES_DIR, 'namespace-auto-create.yaml'), 'w') as f:
+        f.write(namespace_yaml)
+        
     print("Helm chart parameterized and generated in 'release/' directory.")
 
 if __name__ == '__main__':
